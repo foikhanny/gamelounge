@@ -56,13 +56,13 @@ export function TopCasinos() {
             <label htmlFor="sort" className="text-sm md:text-base">
               Sort by
             </label>
-            <div className="flex gap-4">
+            <div className="grid grid-cols-2 gap-3 md:flex md:gap-4">
               <div className="relative">
                 <select
                   id="sort"
                   value={sort}
                   onChange={(e) => setSort(e.target.value as SortOption)}
-                  className="h-10 w-[154px] appearance-none rounded-md border border-[#c8c8c8] bg-white px-4 text-sm md:h-10 md:w-[200px] md:px-5 md:text-base md:text-muted"
+                  className="h-10 w-full appearance-none rounded-md border border-[#c8c8c8] bg-white px-4 text-sm md:h-10 md:w-[200px] md:px-5 md:text-base md:text-muted"
                 >
                   {sortOptions.map((o) => (
                     <option key={o.id} value={o.id}>
@@ -78,7 +78,7 @@ export function TopCasinos() {
               <button
                 type="button"
                 onClick={() => setFilterOpen(true)}
-                className="inline-flex h-10 items-center gap-3 rounded-md border border-[#c8c8c8] px-7 text-lg md:text-xl"
+                className="inline-flex h-10 items-center justify-center gap-3 rounded-md border border-[#c8c8c8] px-7 text-lg md:text-xl"
               >
                 <span aria-hidden className="icon-[mdi--tune-variant] size-6 text-muted" />
                 Filter

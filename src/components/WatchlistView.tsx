@@ -63,8 +63,8 @@ export function WatchlistView() {
           ))}
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 rounded-xl bg-white px-3 py-4 shadow-[0_0_2px_0_rgb(104_104_104/0.15)] md:gap-4 md:px-5">
-          <label htmlFor="watchlist-sort" className="text-sm">
+        <div className="grid grid-cols-2 items-center gap-3 rounded-xl bg-white px-3 py-4 shadow-[0_0_2px_0_rgb(104_104_104/0.15)] md:flex md:gap-4 md:px-5">
+          <label htmlFor="watchlist-sort" className="col-span-2 text-sm">
             Sort by
           </label>
           <div className="relative">
@@ -72,7 +72,7 @@ export function WatchlistView() {
               id="watchlist-sort"
               value={sort}
               onChange={(e) => setSort(e.target.value as SortOption)}
-              className="h-10 w-[154px] appearance-none rounded-md border border-[#c8c8c8] bg-white px-4 text-sm text-muted md:w-[200px] md:px-5 md:text-base"
+              className="h-10 w-full appearance-none rounded-md border border-[#c8c8c8] bg-white px-4 text-sm text-muted md:w-[200px] md:px-5 md:text-base"
             >
               {sortOptions.map((o) => (
                 <option key={o.id} value={o.id}>
@@ -88,7 +88,7 @@ export function WatchlistView() {
           <button
             type="button"
             onClick={() => setFilterOpen(true)}
-            className="inline-flex h-10 items-center gap-3 rounded-md border border-[#c8c8c8] px-4 text-lg md:px-6"
+            className="inline-flex h-10 items-center justify-center gap-3 rounded-md border border-[#c8c8c8] px-4 text-lg md:px-6"
           >
             <span aria-hidden className="icon-[mdi--tune-variant] size-6 text-muted" />
             Filter
