@@ -7,11 +7,11 @@ import { casinoBySlug, paymentLogos, type Casino } from "@/data/casinos";
 import { clearCompare, markViewed, setCompare, useCompare } from "@/lib/store";
 import { SelectionBar } from "./SelectionBar";
 
-type Row = { label: string; render: (c: Casino) => ReactNode; highlight?: boolean };
+type Row = { label: string; render: (c: Casino, compact?: boolean) => ReactNode; highlight?: boolean };
 
 const Check = () => (
-  <span className="p-2.5">
-    <span aria-label="Yes" className="icon-[akar-icons--check] block size-6 text-brand-deep" />
+  <span className="block md:p-2.5">
+    <span aria-label="Yes" className="icon-[akar-icons--check] block size-5 text-brand-deep md:size-6" />
   </span>
 );
 
@@ -22,11 +22,20 @@ const rows: Row[] = [
   {
     label: "Payment method",
     highlight: true,
-    render: (c) => (
-      <span className="flex items-center gap-2.5">
+    render: (c, compact) => (
+      <span className={`flex items-center ${compact ? "flex-wrap gap-1.5" : "gap-2.5"}`}>
         {c.compare.payments.map((p) => {
           const logo = paymentLogos[p];
-          return <Image key={p} src={logo.src} alt={logo.label} width={logo.w} height={logo.h} />;
+          return (
+            <Image
+              key={p}
+              src={logo.src}
+              alt={logo.label}
+              width={logo.w}
+              height={logo.h}
+              className={compact ? "h-6 w-auto" : undefined}
+            />
+          );
         })}
       </span>
     ),
@@ -78,10 +87,17 @@ export function CompareView() {
             <button
               type="button"
               onClick={share}
-              className="inline-flex h-10 flex-1 items-center justify-center gap-2.5 rounded-lg border border-brand px-3 text-brand md:w-64 md:flex-none"
+              className="inline-flex h-10 flex-1 items-center justify-center gap-2.5 rounded-lg border border-brand px-3 whitespace-nowrap text-brand md:w-64 md:flex-none"
             >
               <span aria-hidden className="icon-[mdi--share-variant-outline] size-6" />
-              {copied ? "Link copied" : "Share comparison"}
+              {copied ? (
+                "Link copied"
+              ) : (
+                <>
+                  <span className="md:hidden">Share</span>
+                  <span className="hidden md:inline">Share comparison</span>
+                </>
+              )}
               <span aria-hidden className="icon-[akar-icons--arrow-right] size-5 opacity-20" />
             </button>
             <button
@@ -112,8 +128,9 @@ export function CompareView() {
         </div>
       ) : (
         <>
-          <div className="no-scrollbar mt-6 overflow-x-auto">
-            <table className="w-full min-w-[720px] table-fixed border-separate border-spacing-0">
+          <MobileComparison casinos={selected} />
+          <div className="mt-6 hidden lg:block">
+            <table className="w-full table-fixed border-separate border-spacing-0">
               <caption className="sr-only">Casino comparison</caption>
               <thead>
                 <tr>
@@ -191,6 +208,71 @@ function CasinoHeader({ casino }: { casino: Casino }) {
           </a>
         </div>
       </div>
+    </div>
+  );
+}
+
+// Phones and tablets: a sticky strip of the selected casinos, then one block per feature with a value per casino.
+function MobileComparison({ casinos }: { casinos: Casino[] }) {
+  const cols = casinos.length === 2 ? "grid-cols-2" : "grid-cols-3";
+  return (
+    <div className="mt-6 lg:hidden">
+      <ul className={`sticky top-[75px] z-10 -mx-4 md:top-[100px] grid ${cols} gap-2 bg-surface px-4 py-2`}>
+        {casinos.map((c) => (
+          <li key={c.slug} className="overflow-hidden rounded-lg bg-white shadow-soft">
+            <div className="relative h-12 md:h-20" style={{ backgroundColor: c.logoBg }}>
+              <Image src={c.logo} alt="" fill sizes="33vw" className="object-cover" />
+            </div>
+            <div className="px-2 py-1.5">
+              <p className="truncate text-xs font-bold">{c.name}</p>
+              <p className="flex items-center gap-0.5 text-[10px] text-subtle">
+                <span aria-hidden className="icon-[mdi--star] size-2.5 text-yellow" />
+                {c.rating}/5
+              </p>
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      <div className={`grid ${cols} gap-2 pt-1 pb-2`}>
+        {casinos.map((c) => (
+          <div key={c.slug}>
+            <a
+              href="#"
+              rel="sponsored nofollow"
+              onClick={() => markViewed(c.slug)}
+              aria-label={`Visit ${c.name}`}
+              className="flex h-8 items-center justify-center gap-1 rounded-full bg-brand text-xs font-semibold text-white"
+            >
+              Visit
+              <span aria-hidden className="icon-[akar-icons--arrow-up-right] size-3.5" />
+            </a>
+            <a
+              href="#"
+              onClick={() => markViewed(c.slug)}
+              className="mt-1 block py-1 text-center text-[11px] font-semibold text-brand underline"
+            >
+              Read Review
+            </a>
+          </div>
+        ))}
+      </div>
+
+      <dl className="overflow-hidden rounded-xl bg-white">
+        {rows.map((row) => (
+          <div key={row.label} className="border-t border-subtle/10 px-3 py-3 first:border-t-0">
+            <dt className="text-sm font-semibold">{row.label}</dt>
+            <dd className={`mt-2 grid ${cols} gap-2`}>
+              {casinos.map((c) => (
+                <div key={c.slug} className="min-w-0 rounded-md bg-[#f5f5f5]/70 p-2 text-xs font-semibold text-subtle">
+                  <span className="sr-only">{c.name}: </span>
+                  {row.render(c, true)}
+                </div>
+              ))}
+            </dd>
+          </div>
+        ))}
+      </dl>
     </div>
   );
 }
